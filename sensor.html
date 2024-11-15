@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Morserino Sensor Parameters</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff"/>
+
+    <script type="text/javascript" src="js/bundle-serialtest.js"></script>
+    
+    <!-- Bootstrap CSS -->
+    <!--
+        <link href="libs/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .correct {
+            color: black;
+            background-color: lightgreen;
+        }
+
+        .wrong {
+            color: white;
+            background-color: red;
+        }
+        .missing {
+            color: black;
+            background-color: orange;
+        }
+        .bd-footer {
+            text-align: center;
+        }
+        .header {
+            box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
+            background-color: #EEEEEE;
+        }
+        .contentContainer {
+            padding: 20px;
+        }
+        contentContainer .row {
+            padding: 12px;
+        }
+        .inputContainer {
+            margin-top: 25px;
+            background-color: #f9f8f8;
+            border: 1px solid #CCCCCC;
+            padding: 12px;
+        }
+        .inputContainer button {
+            margin: 5px;
+        }
+        .savedResultContainer {
+            margin-top: 25px;
+            background-color: #f9f8f8;
+            border: 1px solid #CCCCCC;
+            padding: 12px;
+        }
+        .savedResultContainer button {
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .form-group {
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+        .form-group textarea {
+            font-size: 100%;
+            padding: 5px;
+            width: 100%;
+        }
+        .result {
+            font-family: monospace;
+            font-size: 100%;
+            text-transform: uppercase;
+        }
+        .legend {
+            font-size: 90%;
+            margin-top: 20px;
+            opacity: 0.7;
+        }
+        #receiveText {
+            background-color: #e2e3e5;
+        }
+        #receiveTextEchoTrainer {
+            background-color: #e2e3e5;
+        }
+        #mainTab {
+            padding-top: 20px;
+        }
+        #serialCommunicationDisabledInfo {
+            display: none;
+        }
+        #receiveTextQsoTrainer {
+            background-color: #e2e3e5;
+        }
+        .qso-request {
+            background-color: #e2e3e5;
+        }
+        .qso-answer {
+            background-color: #f9f8f8;
+            text-shadow: unset;
+        }
+        .qso-answer-button {
+            margin-left: 2px;
+        }
+        .qso-answer.unreadable {
+            filter:url(#wherearemyglasses);
+        }
+        .cw-settings {
+            border: 1px solid #CCCCCC;
+            box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- JavaScript Bundle with Popper -->
+    <!--
+        <script src="libs/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <div class="shadow-sm p-3 mb-2 bg-light">
+        <h1>Morserino32 Sensor Parameters Test</h1>
+            <div class="row">
+                <div class="col-12 col-md-11">
+                    This page is only used to test the serial communication protocol to/from morserino to allow configuration of load sensor paddles.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contentContainer">
+        <div class="row">
+            <div class="col-6">
+                Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
+                <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
+            </div>
+            <div class="col-2 form-check form-switch m32-protocol">
+                <input class="form-check-input" type="checkbox" checked id="voiceOutputCheckbox"  checked="false" >
+                <label class="form-check-label" for="showReceivedCheckbox">Voice Output</label>
+            </div>
+            
+            <div class="col-4 m32-protocol container" id="m32state">
+                <div class="row" >
+                    <div class="col text-end">
+                        <span id="m32Menu" class="badge bg-dark"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-end">
+                        <span id="m32Speed" class="badge bg-dark">17 wpm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div id="serialCommunicationDisabledInfo" class="alert alert-danger mt-2" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                        <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                        <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                      </svg>
+                    Your browser does not support communication to Morserino!
+                    Please use Chrome, Edge or Opera!
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="mainTabContent">
+            <!-- serial communication test -->
+            <div class="tab-pane fade show active" id="cw-generator-tab-content" role="tabpanel" aria-labelledby="cw-generator-tab">
+                <h2>Sensor Paramenters</h2>
+                <div class="inputContainer">
+        
+                    <div class="form-group">
+                        Initialization, retrieve parameters, set new values with PUT:<br />
+                        <textarea rows="5" cols="80" id="inputText" spellcheck="false" placeholder="Send data to morserino">
+PUT device/protocol/on
+GET control/pressure_threshold_dot
+GET control/pressure_threshold_dash
+PUT control/pressure_threshold_dot/10
+PUT control/pressure_threshold_dash/10
+                        </textarea>
+                    </div>                    
+        
+                    <div>
+                        <button id="sendTextButton" class="btn btn-outline-primary" title="Send Text" data-bs-toggle="tooltip">Send Text</button>
+                    </div>
+        
+                    <div class="form-group">
+                        <div id="morserino_detail" class="collapse show">
+                            Received from Morserino:
+                            <textarea rows="5" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea> 
+                            <!-- 
+                                <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                            -->
+                        </div>
+                    </div>
+
+                    <div id="receiveError"></div>
+                    
+                    <div>
+                        <button id="clearAllButton" class="btn btn-outline-secondary" title="Clear text received from Morserino and your input" data-bs-toggle="tooltip">Clear All</button>
+                        <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino" data-bs-toggle="tooltip">Clear Received Text</button>
+                    </div>
+
+
+                </div>
+
+                <div>
+
+</body>
+
+<footer class="bd-footer py-3 mt-2 bg-dark text-white">
+    Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
+    <!--
+        - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
+    -->
+        - V<span id="versionSpan">0.1.0</span>
+</footer>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter id="wherearemyglasses" x="0" y="0">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+      </filter>
+    </defs>
+  </svg>
+
+</html>
